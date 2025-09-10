@@ -4,66 +4,74 @@ import random
 from datetime import datetime, timedelta
 
 # ==== CONFIGURATION ====
-
 REPO_DIR = "C:/Users/user/OneDrive/Desktop/Green"
 FILE_NAME = ".activity"
 AUTHOR_NAME = "rojanstha621"
 AUTHOR_EMAIL = "rojanstha621@gmail.com"
 
 # GitHub contribution grid: 7 rows (Sun-Sat), multiple columns (weeks)
+# 1 = commit, 0 = no commit
 HACKER_GRID = [
     # H
-    [1,0,1,0,1],
-    [1,0,1,0,1],
-    [1,1,1,1,1],
-    [1,0,1,0,1],
-    [1,0,1,0,1],
-    [0,0,0,0,0],  # space
+    [1,0,1,0,1,0,  0],
+    [1,0,1,0,1,0,  0],
+    [1,1,1,1,1,0,  0],
+    [1,0,1,0,1,0,  0],
+    [1,0,1,0,1,0,  0],
+    [0,0,0,0,0,0,  0],
+    [0,0,0,0,0,0,  0],
+
     # A
-    [0,1,1,1,0],
-    [1,0,0,0,1],
-    [1,1,1,1,1],
-    [1,0,0,0,1],
-    [1,0,0,0,1],
-    [0,0,0,0,0],  # space
+    [0,1,1,1,0,0,  0],
+    [1,0,0,0,1,0,  0],
+    [1,1,1,1,1,0,  0],
+    [1,0,0,0,1,0,  0],
+    [1,0,0,0,1,0,  0],
+    [0,0,0,0,0,0,  0],
+    [0,0,0,0,0,0,  0],
+
     # C
-    [0,1,1,1,1],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [1,0,0,0,0],
-    [0,1,1,1,1],
-    [0,0,0,0,0],  # space
+    [0,1,1,1,1,0,  0],
+    [1,0,0,0,0,0,  0],
+    [1,0,0,0,0,0,  0],
+    [1,0,0,0,0,0,  0],
+    [0,1,1,1,1,0,  0],
+    [0,0,0,0,0,0,  0],
+    [0,0,0,0,0,0,  0],
+
     # K
-    [1,0,0,0,1],
-    [1,0,0,1,0],
-    [1,1,1,0,0],
-    [1,0,0,1,0],
-    [1,0,0,0,1],
-    [0,0,0,0,0],  # space
+    [1,0,0,0,1,0,  0],
+    [1,0,0,1,0,0,  0],
+    [1,1,1,0,0,0,  0],
+    [1,0,0,1,0,0,  0],
+    [1,0,0,0,1,0,  0],
+    [0,0,0,0,0,0,  0],
+    [0,0,0,0,0,0,  0],
+
     # E
-    [1,1,1,1,1],
-    [1,0,0,0,0],
-    [1,1,1,1,0],
-    [1,0,0,0,0],
-    [1,1,1,1,1],
-    [0,0,0,0,0],  # space
+    [1,1,1,1,1,0,  0],
+    [1,0,0,0,0,0,  0],
+    [1,1,1,1,0,0,  0],
+    [1,0,0,0,0,0,  0],
+    [1,1,1,1,1,0,  0],
+    [0,0,0,0,0,0,  0],
+    [0,0,0,0,0,0,  0],
+
     # R
-    [1,1,1,1,0],
-    [1,0,0,0,1],
-    [1,1,1,1,0],
-    [1,0,1,0,0],
-    [1,0,0,1,0],
+    [1,1,1,1,0,0,  0],
+    [1,0,0,0,1,0,  0],
+    [1,1,1,1,0,0,  0],
+    [1,0,1,0,0,0,  0],
+    [1,0,0,1,0,0,  0],
+    [0,0,0,0,0,0,  0],
+    [0,0,0,0,0,0,  0],
 ]
 
 START_DATE = datetime(2024, 1, 7)  # must be a Sunday
 
 
 def run_git_command(command, env=None):
-    try:
-        subprocess.run(command, check=True, shell=isinstance(command, str), env=env)
-    except subprocess.CalledProcessError as e:
-        print(f"❌ Error running command: {e}")
-        exit(1)
+    subprocess.run(command, check=True, shell=isinstance(command, str), env=env)
 
 
 def make_commit(commit_date):
@@ -84,21 +92,20 @@ def make_commit(commit_date):
     env["GIT_AUTHOR_EMAIL"] = AUTHOR_EMAIL
     env["GIT_COMMITTER_NAME"] = AUTHOR_NAME
     env["GIT_COMMITTER_EMAIL"] = AUTHOR_EMAIL
-    run_git_command(["git", "commit", "-m", "Hacker"], env=env)
+    run_git_command(["git", "commit", "-m", "HACKER"], env=env)
 
 
 def get_commit_dates_from_grid(grid, start_date):
     dates = []
-    for col, week in enumerate(grid):
-        for row, cell in enumerate(week):
-            if cell == 1:
-                commit_date = start_date + timedelta(weeks=col, days=row)
+    for week in range(len(grid[0])):  # columns = weeks
+        for day in range(len(grid)):  # rows = days (Sun-Sat)
+            if grid[day][week] == 1:
+                commit_date = start_date + timedelta(weeks=week, days=day)
                 dates.append(commit_date)
     return dates
 
 
 # ==== MAIN EXECUTION ====
-
 os.chdir(REPO_DIR)
 if not os.path.isdir(".git"):
     print("❗ Not a git repository!")
